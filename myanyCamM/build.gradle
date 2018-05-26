@@ -1,0 +1,36 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "27.0.3"
+    aaptOptions.cruncherEnabled = false
+    aaptOptions.useNewCruncher = false
+
+    defaultConfig {
+        applicationId "com.myanycamm.cam"
+        minSdkVersion 8
+        targetSdkVersion 17
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+    sourceSets {
+        main {
+            jni.srcDirs = []
+        }
+    }
+}
+
+dependencies {
+    compile project(':initActivity')
+    compile 'com.android.support:support-v4:19.1.0'
+    compile files('libs/afinal_0.5_bin.jar')
+    compile files('libs/core.jar')
+    compile files('libs/twitter4j-core-3.0.3.jar')
+    compile files('libs/twitter4j-stream-3.0.3.jar')
+    compile files('libs/umeng_sdk.jar')
+}
