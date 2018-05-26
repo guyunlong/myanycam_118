@@ -61,6 +61,8 @@ import com.myanycamm.process.AdPcm;
 import com.myanycamm.utils.ELog;
 import com.myanycamm.utils.FileUtils;
 import com.myanycamm.utils.Utils;
+import com.thSDK.VideoSurfaceView;
+import com.thSDK.lib;
 
 public class CloudLivingView extends LivingView {
 
@@ -78,7 +80,7 @@ public class CloudLivingView extends LivingView {
 	private static final int FADE_OUT_MEDIA = 28;
 	private static final int sDefaultTimeout = 3000;
 	private ImageButton speak, photo, sound, videRec;
-	private SurfaceView mSurfaceView;
+	private VideoSurfaceView mSurfaceView;
 	// private GlBufferView mGlBufferView;
 	private RelativeLayout mediaControllerLayout;
 	private boolean isSound = false;
@@ -340,7 +342,30 @@ public class CloudLivingView extends LivingView {
 		@Override
 		public void onClick(View v) {
 			sf.manualSnap();
-			if (!FileUtils.externalMemoryAvailable()) {
+
+			try {
+//				FileUtils.saveFile(bitmap,
+//						"myanycam" + SystemClock.currentThreadTimeMillis()
+//								+ ".png", PhotoListView.mCardPath);
+				String capturePath =  FileUtils.createFile("myanycam" + SystemClock.currentThreadTimeMillis()
+						+ ".png",PhotoListView.mCardPath);
+				Log.e("ankailocalliving",capturePath);
+				if (capturePath.length()>0){
+					lib.jlocal_SnapShot(capturePath);
+				}
+
+				Toast.makeText(mActivity,
+						mActivity.getString(R.string.save_success),
+						Toast.LENGTH_SHORT).show();
+
+			} catch (IOException e) {
+				ELog.i(TAG, "保存失败>.." + e.getMessage());
+				Toast.makeText(mActivity,
+						mActivity.getString(R.string.save_failed),
+						Toast.LENGTH_SHORT).show();
+				e.printStackTrace();
+			}
+			/*if (!FileUtils.externalMemoryAvailable()) {
 				Toast.makeText(mActivity,
 						mActivity.getString(R.string.sdcard_invalid),
 						Toast.LENGTH_SHORT).show();
@@ -360,7 +385,7 @@ public class CloudLivingView extends LivingView {
 						mActivity.getString(R.string.save_failed),
 						Toast.LENGTH_SHORT).show();
 				e.printStackTrace();
-			}
+			}*/
 			// sf.getMcuSocket().modifyCam();
 		}
 	};
@@ -504,8 +529,8 @@ public class CloudLivingView extends LivingView {
 				.findViewById(R.id.mediacontroll);
 		mediaControllerLayout.getBackground().setAlpha(50);
 		headLayout = (LinearLayout) camView.findViewById(R.id.head_layout);
-		mSurfaceView = (SurfaceView) camView.findViewById(R.id.paly_surf);
-
+		mSurfaceView = (VideoSurfaceView) camView.findViewById(R.id.paly_surf);
+		mSurfaceView.setHandler(mHandler);
 		// mGlBufferView = (GlBufferView)
 		// camView.findViewById(R.id.glbuffer_view);
 		surfaceHolder = mSurfaceView.getHolder();
@@ -806,9 +831,9 @@ public class CloudLivingView extends LivingView {
 		//
 		VideoData.Videolist.clear();// 清空数据
 		VideoData.audioArraryList.clear();
-		recThread dataRecThread = new recThread(mHandler);
+		//recThread dataRecThread = new recThread(mHandler);
 		//
-		dataRecThread.start();
+		//dataRecThread.start();
 		sf.mUdpSocket.setmVideoListener(mVideoListener);
 		sound.setOnClickListener(soundOnClickListener);
 		photo.setOnClickListener(photoOnClickListener);

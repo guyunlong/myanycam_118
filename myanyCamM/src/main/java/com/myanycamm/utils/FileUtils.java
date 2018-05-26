@@ -1,18 +1,16 @@
 package com.myanycamm.utils;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.media.MediaPlayer;
 import android.os.Environment;
-import android.util.Log;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class FileUtils {
 	private static String TAG = "FileUtils";
@@ -79,7 +77,20 @@ public class FileUtils {
 		}
 		return null;
 	}
-	
+
+	public static String  createFile( String fileName,String dirName) throws IOException {
+		File dirFile = new File(dirName);
+		if(!dirFile.exists()){
+			dirFile.mkdir();
+		}
+		File myCaptureFile = new File(dirName + fileName);
+		boolean bfile = myCaptureFile.createNewFile();
+		if (bfile){
+			return dirName+fileName;
+		}
+		return "";
+	}
+
 	public String getSdcardRootPath(){
 		return SDPath;
 	}

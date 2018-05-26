@@ -1,6 +1,13 @@
 package com.myanycam.net;
 
-import gyl.cam.SoundPlay;
+import com.myanycam.bean.CameraListInfo;
+import com.myanycam.bean.MainSocket;
+import com.myanycam.bean.Vdata;
+import com.myanycam.bean.VideoData;
+import com.myanycamm.model.VideoListener;
+import com.myanycamm.ui.CloudLivingView;
+import com.myanycamm.utils.ELog;
+import com.myanycamm.utils.FormatTransfer;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -18,21 +25,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.os.SystemClock;
-
-import com.myanycam.bean.CameraListInfo;
-import com.myanycam.bean.MainSocket;
-import com.myanycam.bean.Vdata;
-import com.myanycam.bean.VideoData;
-import com.myanycamm.model.VideoListener;
-import com.myanycamm.process.ScreenManager;
-import com.myanycamm.ui.CloudLivingView;
-import com.myanycamm.utils.ELog;
-import com.myanycamm.utils.FormatTransfer;
+import gyl.cam.SoundPlay;
 
 public class UdpSocket {
 
@@ -668,10 +661,17 @@ public class UdpSocket {
 
 				// VideoData.videoTreeMap.put(Integer.toString(iTimeStamp),
 				// videoWithCmd);
-				videoSize = videoWithCmd[6];
-				v.setVideoData(videoWithCmd);
-				VideoData.Videolist.add(v);
-				vMap.remove(packageId);
+//				videoSize = videoWithCmd[6];
+//				v.setVideoData(videoWithCmd);
+//				VideoData.Videolist.add(v);
+//				vMap.remove(packageId);
+
+				synchronized(VideoData.Videolist){
+					videoSize = videoWithCmd[6];
+					Vdata video = new Vdata();
+					video.setVideoData(videoWithCmd);
+					VideoData.Videolist.add(video);
+				}
 				//
 				break;
 			case 1:

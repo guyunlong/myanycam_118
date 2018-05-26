@@ -1,12 +1,5 @@
 package com.myanycamm.cam;
 
-import gyl.cam.SoundPlay;
-import gyl.cam.recThread;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -67,6 +60,12 @@ import com.myanycamm.ui.PhotoListView;
 import com.myanycamm.utils.ELog;
 import com.myanycamm.utils.FileUtils;
 import com.myanycamm.utils.Utils;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+
+import gyl.cam.SoundPlay;
 
 public class CallAcceptActivity extends Activity {
 	private final String TAG = "CallAcceptActivity";
@@ -711,9 +710,9 @@ public class CallAcceptActivity extends Activity {
 				.start();// 开一条线程绘图
 		//
 		VideoData.Videolist.clear();// 清空数据
-		recThread dataRecThread = new recThread(callHandler);
+		//recThread dataRecThread = new recThread(callHandler);
 		//
-		dataRecThread.start();
+		//dataRecThread.start();
 		SocketFunction.getInstance().mUdpSocket
 				.setmVideoListener(mVideoListener);
 		sound.setOnClickListener(soundOnClickListener);

@@ -1,28 +1,23 @@
 package com.myanycam.net;
 
-import gyl.cam.SoundPlay;
+import com.myanycam.bean.CameraListInfo;
+import com.myanycam.bean.Vdata;
+import com.myanycam.bean.VideoData;
+import com.myanycamm.utils.ELog;
+import com.myanycamm.utils.FormatTransfer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Date;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.support.v4.app.TaskStackBuilder;
-
-import com.myanycam.bean.CameraListInfo;
-import com.myanycam.bean.MainSocket;
-import com.myanycam.bean.Vdata;
-import com.myanycam.bean.VideoData;
-import com.myanycamm.utils.ELog;
-import com.myanycamm.utils.FormatTransfer;
+import gyl.cam.SoundPlay;
 
 public class TcpSocket extends Socket{
 	private String TAG = "TcpSocket";
@@ -115,10 +110,17 @@ public class TcpSocket extends Socket{
 
 									// VideoData.videoTreeMap.put(Integer.toString(iTimeStamp),
 									// videoWithCmd);
-									videoSize = videoWithCmd[6];
-									Vdata v = new Vdata();
-									v.setVideoData(videoWithCmd);
-									VideoData.Videolist.add(v);
+//									videoSize = videoWithCmd[6];
+//									Vdata v = new Vdata();
+//									v.setVideoData(videoWithCmd);
+//									VideoData.Videolist.add(v);
+
+									synchronized(VideoData.Videolist){
+										videoSize = videoWithCmd[6];
+										Vdata v = new Vdata();
+										v.setVideoData(videoWithCmd);
+										VideoData.Videolist.add(v);
+									}
 									//
 									break;
 								case 1:
