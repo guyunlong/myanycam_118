@@ -76,7 +76,7 @@ public class VideoSurfaceView extends SurfaceView implements SurfaceHolder.Callb
         Log.e(tag,"surface run");
 
         AppServer.isDisplayVideo = true;
-        while (true)
+        while (AppServer.isDisplayVideo)
         {
 
             if(changeSurface && startDecodeThread){
