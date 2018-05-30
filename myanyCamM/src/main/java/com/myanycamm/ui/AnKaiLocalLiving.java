@@ -6,7 +6,6 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.gesture.GestureOverlayView;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -16,7 +15,6 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -42,6 +40,7 @@ import com.myanycamm.utils.ELog;
 import com.myanycamm.utils.FileUtils;
 import com.myanycamm.utils.Utils;
 import com.thSDK.VideoSurfaceView;
+import com.thSDK.lib;
 
 import java.io.IOException;
 
@@ -56,7 +55,7 @@ public class AnKaiLocalLiving extends LivingView {
 	private ImageButton photo, sound, videRec;
 	private RelativeLayout mediaControllerLayout;
 	private VideoSurfaceView mSurfaceView;
-	SurfaceHolder surfaceHolder;
+	//SurfaceHolder surfaceHolder;
 
 	private static final int SET_Img = 21;
 	private static final int SHOW_CONTROLLER = 22;
@@ -102,13 +101,13 @@ public class AnKaiLocalLiving extends LivingView {
 			switch (msg.what) {
 
 			case SET_Img:
-				bitmap = (Bitmap) msg.obj;
+
 				if (!AppServer.isDisplayVideo) {
 					return;
 				}
 				//
 				if (isFirstVideo) {
-					sdlTAG = true;
+
 					mSurfaceView.setBackgroundColor(Color.TRANSPARENT);
 					playLayout.setVisibility(View.GONE);
 					mActivity
@@ -190,20 +189,21 @@ public class AnKaiLocalLiving extends LivingView {
 		@Override
 		public void onClick(View v) {
 			SocketFunction.getInstance().manualSnap();
-			if (!FileUtils.externalMemoryAvailable()) {
-				Toast.makeText(mActivity,
-						mActivity.getString(R.string.sdcard_invalid),
-						Toast.LENGTH_SHORT).show();
-				return;
-			}
-
 			try {
-				FileUtils.saveFile(bitmap,
-						"myanycam" + SystemClock.currentThreadTimeMillis()
-								+ ".png", PhotoListView.mCardPath);
+//				FileUtils.saveFile(bitmap,
+//						"myanycam" + SystemClock.currentThreadTimeMillis()
+//								+ ".png", PhotoListView.mCardPath);
+				String capturePath =  FileUtils.createFile("myanycam" + SystemClock.currentThreadTimeMillis()
+						+ ".png",PhotoListView.mCardPath);
+				Log.e("ankailocalliving",capturePath);
+				if (capturePath.length()>0){
+					lib.jlocal_SnapShot(capturePath);
+				}
+
 				Toast.makeText(mActivity,
 						mActivity.getString(R.string.save_success),
 						Toast.LENGTH_SHORT).show();
+
 			} catch (IOException e) {
 				ELog.i(TAG, "保存失败>.." + e.getMessage());
 				Toast.makeText(mActivity,
@@ -376,7 +376,7 @@ public class AnKaiLocalLiving extends LivingView {
 		headLayout = (LinearLayout) camView.findViewById(R.id.head_layout);
 		mSurfaceView = (VideoSurfaceView) camView.findViewById(R.id.paly_surf);
 		mSurfaceView.setHandler(mHandler);
-		surfaceHolder = mSurfaceView.getHolder();
+		//surfaceHolder = mSurfaceView.getHolder();
 		mActivity
 				.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		mActivity.getWindow().addFlags(
@@ -607,7 +607,7 @@ public class AnKaiLocalLiving extends LivingView {
 		ELog.i(TAG, "开始了视频..");
 		isFirstVideo = true;
 		isDrawBitmap = true;
-		new DrawImage(10, Utils.getHeightPixels(mActivity) / 2).start();// 开一条线程绘图
+
 		//
 		VideoData.Videolist.clear();// 清空数据
 		VideoData.audioArraryList.clear();
@@ -624,7 +624,12 @@ public class AnKaiLocalLiving extends LivingView {
 
 	@Override
 	public void show(int timeout) {
-
+		mHandler.sendEmptyMessage(SHOW_CONTROLLER);
+		if (timeout != 0) {
+			mHandler.removeMessages(FADE_OUT);
+			mHandler.sendMessageDelayed(mHandler.obtainMessage(FADE_OUT),
+					timeout);
+		}
 	}
 
 	@Override
@@ -701,99 +706,7 @@ public class AnKaiLocalLiving extends LivingView {
 
 	}
 
-	class DrawImage extends Thread {
-		int x, y;
 
-		public DrawImage(int x, int y) {
-			this.x = x;
-			this.y = y;
-		}
-
-		public void run() {
-			isDrawBitmap = true;
-			int i = 0;
-			int iCount = 0;
-			while (isDrawBitmap) {
-				if (bitmap != null) {// 如果图像有效
-					// mGlBufferView.setBitmap(bitmap);
-					int imgWidth = bitmap.getWidth();
-					int imgHeight = bitmap.getHeight();
-					Canvas c = surfaceHolder.lockCanvas();
-					if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-						// 当前为横屏，在此处添加额外的处理代码
-						adaptHeightScreen(imgWidth, imgHeight);
-
-					} else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-						// 当前为竖屏，// 在此处添加额外的处理代码
-						adaptWidthScreen(imgWidth, imgHeight);
-					}
-					// float scaleWidth = ((float) Utils
-					// .getWidthPixels(VideoPlayActivity.this) / imgWidth);
-					// float scaleHeight = ((float) Utils
-					// .getHeightPixels(VideoPlayActivity.this) / imgWidth);
-					// c.scale(scaleWidth, scaleHeight);
-					// c.setMatrix (matrix);
-
-					// c.drawBitmap(bitmap, this.x, this.y, new Paint());
-					Paint paint = new Paint();
-					paint.setDither(true);
-					float scaleWidth = ((float) Utils.getWidthPixels(mActivity));
-					try {
-						// c.drawBitmap(bitmap, matrix, paint);
-						c.drawColor(Color.BLACK);
-						c.drawBitmap(bitmap, matrix, paint);
-						iCount++;
-						if (iCount < 30 && isRecVideoing) {
-							paint.setColor(Color.RED);
-
-							float scaleHeight = ((float) Utils
-									.getHeightPixels(mActivity));
-
-							if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-								// 当前为横屏，在此处添加额外的处理代码
-								c.drawCircle(scaleWidth - 50, 50, 10, paint);
-
-							} else {
-								// 当前为竖屏，// 在此处添加额外的处理代码
-								c.drawCircle(scaleWidth - 50, 200, 10, paint);
-							}
-
-							Log.i(TAG, "	Color.RED " + iCount);
-							// Log.i(TAG,
-							// "width ="+scaleWidth+"height = "+scaleHeight);
-						} else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-							paint.setColor(Color.BLACK);
-							c.drawCircle(scaleWidth - 50, 200, 10, paint);
-						}
-
-						if (iCount > 60) {
-							iCount = 0;
-						}
-						surfaceHolder.unlockCanvasAndPost(c);// 更新屏幕显示内容
-
-					} catch (NullPointerException e) {
-						continue;
-					}
-
-				} else {
-					//
-					// try {
-					// DrawImage.sleep(1000);
-					// } catch (InterruptedException e) {
-					//
-					// e.printStackTrace();
-					// }
-					//
-					// if (i == 15 && VideoData.audioArraryList.isEmpty()
-					// && VideoData.videoArraryList.isEmpty()) {
-					// ShowRetryDialog();
-					//
-					// }
-					// i++;
-				}
-			}
-		}
-	}
 
 	@Override
 	public void setDeviceStatus(int sdcard,int battery) {

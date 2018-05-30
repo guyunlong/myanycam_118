@@ -25,6 +25,7 @@ public class VideoSurfaceView extends SurfaceView implements SurfaceHolder.Callb
     private Handler mHandler;
     boolean startDecodeThread = false;
     boolean changeSurface = false;
+    boolean isSurfaceExist = true;
 //    String H264Path; //264写测试文件路径
 //    DataOutputStream out;
 //    static  int frameCnt = 0;
@@ -54,6 +55,7 @@ public class VideoSurfaceView extends SurfaceView implements SurfaceHolder.Callb
 
     public void surfaceDestroyed(SurfaceHolder holder) {
         Log.e(tag,"surface destoryed");
+        isSurfaceExist = false;
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
@@ -65,6 +67,7 @@ public class VideoSurfaceView extends SurfaceView implements SurfaceHolder.Callb
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
+        isSurfaceExist = true;
         changeSurface = true;
         if (!startDecodeThread){
             new Thread(this).start();
@@ -76,7 +79,7 @@ public class VideoSurfaceView extends SurfaceView implements SurfaceHolder.Callb
         Log.e(tag,"surface run");
 
         AppServer.isDisplayVideo = true;
-        while (AppServer.isDisplayVideo)
+        while (isSurfaceExist)
         {
 
             if(changeSurface && startDecodeThread){
