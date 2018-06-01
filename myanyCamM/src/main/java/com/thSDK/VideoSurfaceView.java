@@ -128,7 +128,9 @@ public class VideoSurfaceView extends SurfaceView implements SurfaceHolder.Callb
             }
 
         }
-        //startDecodeThread = false;
+        Log.e(tag,"surface run end");
+        startDecodeThread = false;
+        recType = -1;
 
     }
 

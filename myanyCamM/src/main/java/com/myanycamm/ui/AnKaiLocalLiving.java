@@ -86,7 +86,7 @@ public class AnKaiLocalLiving extends LivingView {
 	QuickAction mQuickAction;
 
 	AlertDialog.Builder builder;
-	private boolean isFirstVideo = true;
+	public boolean isFirstVideo = true;
 	public static boolean isRecording = false;
 	private boolean isDrawBitmap = false;
 	private boolean isSound = false;

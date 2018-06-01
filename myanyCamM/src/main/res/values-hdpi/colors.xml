@@ -35,4 +35,7 @@
     <color name="version_color">#ff808080</color>
     <color name="more_info">#ff333333</color>
 
+
+    <color name="tab_normal">#161616</color>
+    <color name="tab_select">#000000</color>
 </resources>
