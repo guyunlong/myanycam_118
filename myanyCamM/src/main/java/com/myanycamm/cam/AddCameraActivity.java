@@ -1,7 +1,5 @@
 package com.myanycamm.cam;
 
-import java.util.HashMap;
-
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,6 +18,8 @@ import com.myanycam.net.SocketFunction;
 import com.myanycamm.ui.DialogFactory;
 import com.myanycamm.utils.ELog;
 import com.myanycamm.zxing.client.android.CaptureActivity;
+
+import java.util.HashMap;
 
 public class AddCameraActivity extends BaseActivity {
 	private static String TAG = "AddCameraActivity";
@@ -43,6 +43,12 @@ public class AddCameraActivity extends BaseActivity {
 					Toast.makeText(AddCameraActivity.this,
 							getString(R.string.add_cam_success),
 							Toast.LENGTH_SHORT).show();
+
+					Intent intent1=new  Intent(AddCameraActivity.this, CaptureActivity.class).putExtra("result", true);
+					//标识列 + Intent
+					setResult(102, intent1);
+
+
 					AddCameraActivity.this.finish();
 					// sf.downloadCamera();
 				}

@@ -1,10 +1,5 @@
 package com.myanycamm.zxing.client.android;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Vector;
-
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -39,6 +34,11 @@ import com.myanycamm.cam.R;
 import com.myanycamm.utils.ELog;
 import com.myanycamm.zxing.client.android.result.ResultHandler;
 import com.myanycamm.zxing.client.android.result.ResultHandlerFactory;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Vector;
 
 public final class CaptureActivity extends BaseActivity implements
 		SurfaceHolder.Callback {
@@ -180,8 +180,13 @@ public final class CaptureActivity extends BaseActivity implements
 	private void toAddActivity() {
 		Intent intent = new Intent(CaptureActivity.this,
 				AddCameraActivity.class);
-		startActivity(intent);
+		startActivityForResult(intent, 101);
+		//startActivity(intent);
 	}
+
+
+
+
 
 	@Override
 	protected void onResume() {
@@ -337,12 +342,16 @@ public final class CaptureActivity extends BaseActivity implements
 			Intent data = null;
 			if (isLogin) {
 				data = new Intent(CaptureActivity.this, LoginActivity.class);
+                data.putExtra("caminfo", displayContents.toString());
+                startActivity(data);
 			}else{
 				data = new Intent(CaptureActivity.this, AddCameraActivity.class);
+                data.putExtra("caminfo", displayContents.toString());
+              //  startActivity(data);
+                startActivityForResult(data, 101);
 			}
 	
-			data.putExtra("caminfo", displayContents.toString());
-			startActivity(data);
+
 //			startActivity(data);
 //			setResult(3, data);
 //			finish();

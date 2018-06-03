@@ -1,12 +1,9 @@
 package com.myanycamm.ui;
 
-import java.util.ArrayList;
-
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Environment;
 import android.view.View;
 import android.widget.Toast;
 
@@ -18,12 +15,13 @@ import com.myanycam.bean.VideoEventInfo;
 import com.myanycam.net.SocketFunction;
 import com.myanycamm.cam.CameraCenterActivity;
 import com.myanycamm.cam.R;
-import com.myanycamm.cam.VLCPlayActivity;
 import com.myanycamm.cam.VideoDownLoad;
 import com.myanycamm.model.EventVideoAdapter;
 import com.myanycamm.ui.OneVideoFileListItemCell.IOneVideoFileItemListener;
 import com.myanycamm.utils.ELog;
 import com.nmbb.oplayer.ui.player.VideoActivity;
+
+import java.util.ArrayList;
 
 public class VideoEvent extends AnyCamEvent implements IXListViewListener {
 	private EventVideoAdapter videoFileListAdapter;
@@ -132,7 +130,7 @@ public class VideoEvent extends AnyCamEvent implements IXListViewListener {
 				intent.setData(Uri.parse(url));
 				intent.putExtra("displayName", "myanycam");		
 				mActivity.startActivity(intent);
-			}else if(url.endsWith("MOV") || url.endsWith("mov"))  {
+			}else if(url.endsWith("MOV") || url.endsWith("mov") || url.endsWith("mp4"))  {
 				//用自带播放器播放
 				 Intent intent = new Intent(Intent.ACTION_VIEW);
 	             intent.setDataAndType(Uri.parse(url), "video/mov");
