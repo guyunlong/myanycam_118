@@ -1,5 +1,7 @@
 package com.myanycam.net;
 
+import android.util.Log;
+
 import com.myanycam.bean.CameraListInfo;
 import com.myanycam.bean.Vdata;
 import com.myanycam.bean.VideoData;
@@ -18,6 +20,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import gyl.cam.SoundPlay;
+
+import static com.thSDK.lib.jvideo_decode_frame;
+import static com.thSDK.lib.jvideo_decode_init;
 
 public class TcpSocket extends Socket{
 	private String TAG = "TcpSocket";
@@ -40,9 +45,9 @@ public class TcpSocket extends Socket{
 		}
 		return instance;
 	}
-	
+
 	public void connect(final String ip, final int port) {
-	 new Thread(new Runnable() {
+		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -60,11 +65,11 @@ public class TcpSocket extends Socket{
 					out.write(data3);
 					out.flush();
 					new Timer().scheduleAtFixedRate(new TimerTask() {
-						
+
 						@Override
 						public void run() {
 							rateLast = tempRate;
-							tempRate = 0;							
+							tempRate = 0;
 						}
 					}, new Date(), 1000);
 					while (isTcpRecive) {
@@ -74,15 +79,16 @@ public class TcpSocket extends Socket{
 							byte[] len = new byte[4];
 							in.read(len, 0, 4);
 							int iLen = FormatTransfer.hBytesToInt(len);
-							ELog.i(TAG, "长度=" + iLen);
-							if (iLen < 0) {
-								 in = null;
-								 continue;
+//
+							if ((iLen < 0)  || (iLen>204800)){
+								ELog.i(TAG, "长度 error:" +iLen);
+								in = null;
+								continue;
 							}
 							receivePakage = new byte[iLen];
 
 							int haveRead = in.read(receivePakage, 0, iLen);
-							
+
 							ELog.i(TAG, Thread.currentThread().getName()+"应该长度："+iLen +" 实际长度:"+haveRead);
 							while (haveRead <iLen) {
 								haveRead += in.read(receivePakage, haveRead, iLen - haveRead);
@@ -95,51 +101,57 @@ public class TcpSocket extends Socket{
 							}
 
 							switch (receivePakage[0]) {
-							case CMD_SEND_DATA:
-								try {
-									System.arraycopy(receivePakage, 5,
-											videoWithCmd, 0, iLen - 5);
-								} catch (ArrayIndexOutOfBoundsException e) {
-									ELog.i(TAG, "拷频数据错误。");
-									e.printStackTrace();
-									return;
-								}
-								switch (videoWithCmd[0]) {
-								case 0:
-									ELog.i(TAG, "收到视频");
-
-									// VideoData.videoTreeMap.put(Integer.toString(iTimeStamp),
-									// videoWithCmd);
-//									videoSize = videoWithCmd[6];
-//									Vdata v = new Vdata();
-//									v.setVideoData(videoWithCmd);
-//									VideoData.Videolist.add(v);
-
-									synchronized(VideoData.Videolist){
-										videoSize = videoWithCmd[6];
-										Vdata v = new Vdata();
-										v.setVideoData(videoWithCmd);
-										VideoData.Videolist.add(v);
+								case CMD_SEND_DATA:
+									try {
+										System.arraycopy(receivePakage, 5,
+												videoWithCmd, 0, iLen - 5);
+									} catch (ArrayIndexOutOfBoundsException e) {
+										ELog.i(TAG, "拷频数据错误。");
+										e.printStackTrace();
+										return;
 									}
-									//
-									break;
-								case 1:
+									switch (videoWithCmd[0]) {
+										case 0:
+											ELog.i(TAG, "收到视频 tcp ");
 
-									// System.arraycopy(reciverPacke, 16,
-									// videoWithCmd, 0, iLen -
-									// 5);
-									SoundPlay.isAdpcm = videoWithCmd[1] == AUDIOADPCM ? true
-											: false;
-									VideoData.audioArraryList.add(videoWithCmd);
+											// VideoData.videoTreeMap.put(Integer.toString(iTimeStamp),
+											// videoWithCmd);
+											synchronized(VideoData.Videolist){
+												videoSize = videoWithCmd[6];
+												Vdata v = new Vdata();
+												v.setVideoData(videoWithCmd);
+												VideoData.Videolist.add(v);
+											}
+
+
+											//parseFrame(videoWithCmd,videoWithCmd.length);
+
+											//
+											break;
+										case 1:
+
+											// System.arraycopy(reciverPacke, 16,
+											// videoWithCmd, 0, iLen -
+											// 5);
+											SoundPlay.isAdpcm = videoWithCmd[1] == AUDIOADPCM ? true
+													: false;
+											VideoData.audioArraryList.add(videoWithCmd);
+										default:
+											break;
+									}
+
+									break;
 								default:
 									break;
-								}
-
-								break;
-							default:
-								break;
 							}
 							in = null;
+
+							try {
+								Thread.sleep(25);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
@@ -158,14 +170,102 @@ public class TcpSocket extends Socket{
 		}).start();
 
 	}
-	
+	int recType = -1;
+	int type = -1;
+	int width;
+	int height;
+
+	void parseFrame(byte []buf,int total) {
+		// Log.e("gyl", "parse");
+
+		//
+
+		if (buf[6] != recType) {
+			recType = buf[6];
+
+			if (buf[1] == 0x00) {
+				Log.e("gyl", "mpeg code");
+				type = 0;
+			}
+			if (buf[1] == 0x01) {
+				Log.e("gyl", "h264 code");
+				type = 1;
+			}
+			if (buf[6] == 0x00) {
+
+				width = 160;
+				height = 120;
+			}
+			if (buf[6] == 0x01) {
+				width = 176;
+				height = 144;
+			}
+			if (buf[6] == 0x02) {
+				width = 320;
+				height = 240;
+			}
+			if (buf[6] == 0x03) {
+				width = 352;
+				height = 288;
+			}
+			if (buf[6] == 0x04) {
+				width = 640;
+				height = 480;
+			}
+			if (buf[6] == 0x05) {
+				width = 720;
+				height = 480;
+			}
+			if (buf[6] == 0x06) {
+				width = 1280;
+				height = 720;
+			}
+			if (buf[6] == 0x07) {
+				width = 1920;
+				height = 1080;
+			}
+			if (buf[6] == 0x08) {
+				width = 640;
+				height = 360;
+			}
+			if (buf[6] == 0x09) {
+				width = 320;
+				height = 180;
+			}
+			ELog.i(TAG, "width:" + width + "height:" + height);
+			jvideo_decode_init(type, width, height);
+		}
+
+		byte[] bmp = new byte[total - 7];
+		for (int i = 0; i < total - 7; i++) {
+			bmp[i] = buf[i + 7];
+		}
+		//ByteBuffer subbuf = ByteBuffer.wrap(buf,7,total-7);
+		long parseTimeBefore = System.currentTimeMillis();
+		ELog.i(TAG, "tcp 解码---------0" );
+		//synchronized (this)
+		{
+			int n = jvideo_decode_frame( bmp, total - 7);
+			ELog.e(TAG, "tcp 解码n:" + n);
+		}
+
+		//
+		// FileUtils.saveByteToFile(yuv,
+		// Environment.getExternalStorageDirectory().getPath()+"/my.yuv");
+		// VideoData.yuvArrayList.add(yuv);
+		//long parseTimeAfter = System.currentTimeMillis();
+		//parseTime = (int) (parseTimeAfter - parseTimeBefore);
+		//
+
+
+	}
 	public void stopTcpSocket(){
 		ELog.i(TAG, "停止了TcpSocket...");
 		isTcpRecive = false;
 		colseTcp();
 		Thread.currentThread().interrupt();
 	}
-	
+
 	public void sendVoiceToCam(byte[] adpcm) {
 		ELog.i(TAG, "TCp发送声音");
 		// 组包媒体数据
@@ -211,7 +311,7 @@ public class TcpSocket extends Socket{
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-		
+
 		ByteArrayOutputStream outByte = new ByteArrayOutputStream();
 		try {
 			outByte.write(sendVoiceTotalByte);
@@ -222,7 +322,7 @@ public class TcpSocket extends Socket{
 		sendDate(outByte.toByteArray());
 		//
 	}
-	
+
 	public void colseTcp(){
 		if (instance != null) {
 			try {
@@ -234,10 +334,10 @@ public class TcpSocket extends Socket{
 		}
 		instance = null;
 	}
-	
+
 	public static synchronized void sendDate(final byte[] data){
 		new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				try {
@@ -247,11 +347,11 @@ public class TcpSocket extends Socket{
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} 
-				
+				}
+
 			}
 		}).start();
-	
+
 	}
-	
+
 }
