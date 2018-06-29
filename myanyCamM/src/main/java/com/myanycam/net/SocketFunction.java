@@ -1,15 +1,5 @@
 package com.myanycam.net;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.util.Arrays;
-
-import org.videolan.vlc.Util;
-
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -32,6 +22,16 @@ import com.myanycamm.utils.ELog;
 import com.myanycamm.utils.FileUtils;
 import com.myanycamm.utils.FormatTransfer;
 import com.myanycamm.utils.Utils;
+
+import org.videolan.vlc.Util;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.Arrays;
 
 public class SocketFunction extends Application {
 	private static String TAG = "SocketFunction";
@@ -59,16 +59,30 @@ public class SocketFunction extends Application {
 	public static final String PREF_KEY_FIRST = "application_first";
 
 
+	private   boolean isDownLoadPicing = false;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		Log.i(TAG, "oncreate");
 		instance = this;
 		Util.context = getAppContext();
-		Log.i(TAG, "context:" + getAppContext());
+		Log.i(TAG, "context:---------------------0" + this.hashCode());
+
 		init();
 	}
-	
+	public boolean getIsDownLoadPic(){
+		Log.i(TAG, "this:"+this.hashCode()+",getisDownLoadPic:"+this.isDownLoadPicing);
+		return this.isDownLoadPicing;
+	}
+
+	public void setIsDownLoadPic(boolean isDownLoadPic){
+		Log.i(TAG, "this:"+this.hashCode()+",setisDownLoadPic:"+isDownLoadPic);
+		synchronized (this){
+			this.isDownLoadPicing = isDownLoadPic;
+		}
+
+	}
 
 	private void init() {
 		//创建缓存目录
@@ -501,20 +515,37 @@ public class SocketFunction extends Application {
 				"<filename=" + p.getTotalName() + ">" };
 		sendCmd(strings);
 	}
-
-	public boolean downloadPic(CameraListInfo c, PicEventInfo p) {
+	/*0:下载
+	* 1：已经存在
+	* 2：正在下载其他图片*/
+	public int downloadPic(CameraListInfo c, PicEventInfo p) {
 		String path = FileUtils.getSavePath("eventphoto") + "/"
 				+ CameraListInfo.currentCam.getId() + p.getTotalName();
 		if (FileUtils.isExistFile(path)) {
 			ELog.i(TAG, "图片存在..无需下载..");
-			return true;
+			return 1;
 		}
-		String[] strings = { "<xns=XNS_CLIENT>", "<cmd=DOWNLOAD_PICTURE>",
-				"<userid=" + userInfo.getUserId() + ">",
-				"<cameraid=" + c.getId() + ">",
-				"<filename=" + p.getTotalName() + ">" };
-		sendCmd(strings);
-		return false;
+
+		//如果正在下载，就不要发送命令
+		if (this.getIsDownLoadPic())
+		{
+			ELog.i(TAG, "图片下载 如果正在下载，就不要发送命令");
+			return 2;
+
+		}
+		else{
+            ELog.i(TAG, "图片下载发送命令");
+
+            this.setIsDownLoadPic(true);
+            String[] strings = { "<xns=XNS_CLIENT>", "<cmd=DOWNLOAD_PICTURE>",
+                    "<userid=" + userInfo.getUserId() + ">",
+                    "<cameraid=" + c.getId() + ">",
+                    "<filename=" + p.getTotalName() + ">" };
+            sendCmd(strings);
+            return 0;
+        }
+
+
 	}
 
 	public void getVideoList(CameraListInfo c, int pos) {

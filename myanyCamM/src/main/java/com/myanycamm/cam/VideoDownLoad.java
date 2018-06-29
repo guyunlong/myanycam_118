@@ -1,19 +1,5 @@
 package com.myanycamm.cam;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-
-import org.apache.http.Header;
-import org.apache.http.HeaderElement;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.ParseException;
-
 import android.content.Intent;
 import android.os.Environment;
 import android.os.Handler;
@@ -32,6 +18,20 @@ import com.myanycamm.utils.ELog;
 import com.myanycamm.utils.FileUtils;
 import com.myanycamm.utils.NotificationUtils;
 import com.myanycamm.utils.Utils;
+
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.ParseException;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 
 public class VideoDownLoad {
 	
@@ -113,7 +113,9 @@ public class VideoDownLoad {
 		return mVideoDownLoad;
 	}
 
-	
+	public boolean getIsStartUpdate(){
+		return isStartUpdate;
+	}
 	public synchronized void downloadApkFile(String url,
 			UpdateProgressListener listener) throws Exception {
 		addUpdateProgressListener(listener);

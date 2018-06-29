@@ -1,11 +1,6 @@
 
 package com.myanycamm.ui;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.HashMap;
-
-import net.tsz.afinal.FinalBitmap;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
@@ -35,6 +30,12 @@ import com.myanycamm.cam.VLCPlayActivity;
 import com.myanycamm.ui.PhotoViewAttacher.OnPhotoTapListener;
 import com.myanycamm.utils.ELog;
 import com.myanycamm.utils.FileUtils;
+
+import net.tsz.afinal.FinalBitmap;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
 
 public class ImageSwitcherNet extends BaseActivity {
 	private final static String TAG = "ImageSwitcherNet";
@@ -206,9 +207,9 @@ public class ImageSwitcherNet extends BaseActivity {
 
 		}
 		if (FileUtils.externalMemoryAvailable()
-				&& !SocketFunction.getInstance().downloadPic(
+				&& SocketFunction.getInstance().downloadPic(
 						CameraListInfo.currentCam,
-						PhotoEvent.photoEventList.get(position))) {
+						PhotoEvent.photoEventList.get(position)) == 0) {
 			progressBar.setVisibility(View.VISIBLE);
 		}
 	}

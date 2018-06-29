@@ -17,6 +17,7 @@ import com.myanycamm.cam.CameraCenterActivity;
 import com.myanycamm.cam.R;
 import com.myanycamm.cam.VideoDownLoad;
 import com.myanycamm.model.EventVideoAdapter;
+import com.myanycamm.process.ScreenManager;
 import com.myanycamm.ui.OneVideoFileListItemCell.IOneVideoFileItemListener;
 import com.myanycamm.utils.ELog;
 import com.nmbb.oplayer.ui.player.VideoActivity;
@@ -49,6 +50,11 @@ public class VideoEvent extends AnyCamEvent implements IXListViewListener {
 			if (null == mVideoEventInfo.getTotalName()) {
 				return;
 			}
+            if(VideoDownLoad.getInstance().getIsStartUpdate()){
+                Toast.makeText(ScreenManager.getScreenManager().currentActivity(), ScreenManager.getScreenManager().currentActivity().getString(R.string.tip_pre_video_downing), Toast.LENGTH_LONG).show();
+                return;
+            }
+			//if (mActivity.mFileListView.setIsDownload();)
 			mActivity.showRequestDialog(null);
 			SocketFunction.getInstance().downLoadVideo(
 					CameraListInfo.currentCam, mVideoEventInfo.getTotalName());
@@ -89,6 +95,13 @@ public class VideoEvent extends AnyCamEvent implements IXListViewListener {
 	@Override
 	public void itemClick(CameraListInfo c, EventInfo e, int position) {
 		ELog.i(TAG, "视频cell点击");
+
+		if(VideoDownLoad.getInstance().getIsStartUpdate()){
+			Toast.makeText(ScreenManager.getScreenManager().currentActivity(), ScreenManager.getScreenManager().currentActivity().getString(R.string.tip_pre_video_downing), Toast.LENGTH_LONG).show();
+			return;
+		}
+
+
 		setDownload(false);
 
 		VideoEventInfo vei = (VideoEventInfo) e;

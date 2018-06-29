@@ -1,12 +1,5 @@
 package com.myanycamm.process;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -44,6 +37,13 @@ import com.myanycamm.utils.ELog;
 import com.myanycamm.utils.FileUtils;
 import com.myanycamm.utils.NotificationUtils;
 import com.myanycamm.utils.SharePrefereUtils;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 public class DoCmdThread extends Thread {
 	private String TAG = "DoCmdThread";
@@ -747,12 +747,15 @@ public class DoCmdThread extends Thread {
 						// toProxy(proxyurl);
 					}
 				} catch (Exception ex) {
+					SocketFunction.getInstance().setIsDownLoadPic(false);
 					result = addToEventUrl(proxyUrl);
-					ELog.i(TAG, "连接有错误" + ex.getMessage());
+					ELog.i(TAG, "图片下载连接有错误" + ex.getMessage());
 					ex.printStackTrace();
 				} finally {
+					ELog.i(TAG, "图片下载结束" );
+					SocketFunction.getInstance().setIsDownLoadPic(false);
 					if (result == -1) {
-						ELog.i(TAG, "出错了.....");
+						ELog.i(TAG, "图片下载 出错了.....");
 					} else {
 
 						map.put("position", result + "");

@@ -1,7 +1,5 @@
 package com.myanycamm.ui;
 
-import java.util.ArrayList;
-
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,6 +18,8 @@ import com.myanycamm.model.EventPhotoAdapter;
 import com.myanycamm.process.ScreenManager;
 import com.myanycamm.ui.OneFileListItemCell.IOneFileItemListener;
 import com.myanycamm.utils.ELog;
+
+import java.util.ArrayList;
 
 public class PhotoEvent extends AnyCamEvent implements IXListViewListener {
 	private EventPhotoAdapter photoFileListAdapter;
@@ -118,11 +118,15 @@ public class PhotoEvent extends AnyCamEvent implements IXListViewListener {
 	@Override
 	public void itemClick(CameraListInfo c, EventInfo e, int position) {
 		ELog.i(TAG, "照片cell点击");
-		mActivity.showRequestDialog(null);
-		if (mActivity.sf.downloadPic(c, (PicEventInfo) e)) {
+		int ret = mActivity.sf.downloadPic(c, (PicEventInfo) e);
+		if (ret == 0) {
+			mActivity.showRequestDialog(null);
+		}
+		else if(ret == 1){
 			goIntent(position + "");
 		}
-		;
+		else if(ret == 2){
+		}
 	}
 
 	@Override

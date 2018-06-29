@@ -1,12 +1,11 @@
 package com.external.maxwin.view;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import android.content.Context;
+import android.graphics.Canvas;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -21,6 +20,9 @@ import android.widget.TextView;
 
 import com.myanycamm.cam.R;
 import com.myanycamm.utils.ELog;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class XListView extends ListView implements OnScrollListener {
@@ -111,6 +113,16 @@ public class XListView extends ListView implements OnScrollListener {
 								.removeGlobalOnLayoutListener(this);
 					}
 				});
+	}
+
+
+	@Override
+	protected void dispatchDraw(Canvas canvas) {
+		try {
+			super.dispatchDraw(canvas);
+		} catch (IndexOutOfBoundsException e) {
+			Log.e("luna", "Ignore list view error ->" + e.toString());
+		}
 	}
 
 	@Override

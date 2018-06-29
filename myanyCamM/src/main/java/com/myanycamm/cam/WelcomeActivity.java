@@ -13,6 +13,7 @@ import android.os.Message;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.myanycam.bean.CameraListInfo;
 import com.myanycam.bean.MainSocket;
 import com.myanycam.net.NetworkManager;
@@ -25,6 +26,8 @@ import com.myanycamm.utils.Constants;
 import com.myanycamm.utils.ELog;
 
 import java.io.IOException;
+
+import io.fabric.sdk.android.Fabric;
 
 public class WelcomeActivity extends BaseActivity {
 	private static String TAG = "WelcomeActivity";
@@ -136,6 +139,7 @@ public class WelcomeActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Fabric.with(this, new Crashlytics());
 		setContentView(R.layout.activity_welcome);	
 		ELog.i(TAG, "socket:" + MainSocket.getInstance());
 
