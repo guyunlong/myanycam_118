@@ -343,7 +343,7 @@ public class CloudLivingView extends LivingView {
 		public void onClick(View v) {
 			sf.manualSnap();
 
-			try {
+		//	try {
 //				FileUtils.saveFile(bitmap,
 //						"myanycam" + SystemClock.currentThreadTimeMillis()
 //								+ ".png", PhotoListView.mCardPath);
@@ -358,13 +358,13 @@ public class CloudLivingView extends LivingView {
 						mActivity.getString(R.string.save_success),
 						Toast.LENGTH_SHORT).show();
 
-			} catch (IOException e) {
-				ELog.i(TAG, "保存失败>.." + e.getMessage());
-				Toast.makeText(mActivity,
-						mActivity.getString(R.string.save_failed),
-						Toast.LENGTH_SHORT).show();
-				e.printStackTrace();
-			}
+//			} catch (IOException e) {
+//				ELog.i(TAG, "保存失败>.." + e.getMessage());
+//				Toast.makeText(mActivity,
+//						mActivity.getString(R.string.save_failed),
+//						Toast.LENGTH_SHORT).show();
+//				e.printStackTrace();
+//			}
 			/*if (!FileUtils.externalMemoryAvailable()) {
 				Toast.makeText(mActivity,
 						mActivity.getString(R.string.sdcard_invalid),

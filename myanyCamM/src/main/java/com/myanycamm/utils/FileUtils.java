@@ -78,17 +78,17 @@ public class FileUtils {
 		return null;
 	}
 
-	public static String  createFile( String fileName,String dirName) throws IOException {
+	public static String  createFile( String fileName,String dirName) {
 		File dirFile = new File(dirName);
 		if(!dirFile.exists()){
 			dirFile.mkdir();
 		}
-		File myCaptureFile = new File(dirName + fileName);
-		boolean bfile = myCaptureFile.createNewFile();
-		if (bfile){
+//		File myCaptureFile = new File(dirName + fileName);
+//		boolean bfile = myCaptureFile.createNewFile();
+//		if (bfile){
 			return dirName+fileName;
-		}
-		return "";
+//		}
+//		return "";
 	}
 
 	public String getSdcardRootPath(){

@@ -12,6 +12,8 @@ apply plugin: 'io.fabric'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    mavenCentral()
+    google()
 }
 
 
@@ -29,7 +31,7 @@ android {
     }
     defaultConfig {
         applicationId "com.myanycamm.cam"
-        minSdkVersion 9
+        minSdkVersion 14
         targetSdkVersion 17
     }
 
@@ -54,6 +56,8 @@ dependencies {
     compile files('libs/twitter4j-core-3.0.3.jar')
     compile files('libs/twitter4j-stream-3.0.3.jar')
     compile files('libs/umeng_sdk.jar')
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
     compile('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
         transitive = true;
     }
