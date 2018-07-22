@@ -61,9 +61,18 @@ public class DoCmdThread extends Thread {
 		while (!AppServer.stop) {
 			if (cmdMaps.size() > 0) {
 				map = cmdMaps.getFirst();
+				if (map == null){
+					try {
+						sleep(1);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					continue;
+				}
 				Bundle mBundle = new Bundle();
 				mBundle.putSerializable("data", map);
 				Message msg = new Message();
+
 				switch (CmdType.getCmdType(map.get("cmd"))) {
 				case DEVICE_STATUS:
 					ELog.i(TAG, "收到电量标志："+map + "");

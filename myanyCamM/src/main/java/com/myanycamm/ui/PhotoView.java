@@ -1,7 +1,6 @@
 
 package com.myanycamm.ui;
 
-import net.tsz.afinal.FinalBitmap;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
@@ -13,9 +12,12 @@ import android.widget.ImageView;
 import com.myanycamm.ui.PhotoViewAttacher.OnMatrixChangedListener;
 import com.myanycamm.ui.PhotoViewAttacher.OnPhotoTapListener;
 import com.myanycamm.ui.PhotoViewAttacher.OnViewTapListener;
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
 
 public class PhotoView extends ImageView implements IPhotoView {
-	FinalBitmap fb = FinalBitmap.create(getContext());
+	//FinalBitmap fb = FinalBitmap.create(getContext());
 
 	private final PhotoViewAttacher mAttacher;
 
@@ -122,7 +124,25 @@ public class PhotoView extends ImageView implements IPhotoView {
 	}
 	
 	public void setFbImageView(String uri){
-		fb.display(this, uri);
+//		Picasso.with(getContext())
+//				.load(uri)
+//				.resize(640, 360)
+//				.centerCrop()
+//				.config(Bitmap.Config.RGB_565)
+//				//.placeholder(R.drawable.reportthumb)
+//				.into(this);
+
+		File file = new File(uri);
+		if (file != null){
+			Picasso.with(getContext())
+					.load(file)
+					.resize(640, 480)
+					.centerCrop()
+					.config(Bitmap.Config.RGB_565)
+					//.placeholder(R.drawable.reportthumb)
+					.into(this);
+		}
+		//fb.display(this, uri);
 		if (null != mAttacher) {
 			mAttacher.update();
 		}

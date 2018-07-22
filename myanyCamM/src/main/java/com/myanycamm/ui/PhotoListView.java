@@ -1,9 +1,7 @@
 package com.myanycamm.ui;
 
-import java.io.File;
-import java.util.ArrayList;
-import net.tsz.afinal.FinalBitmap;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -25,6 +23,10 @@ import com.myanycamm.cam.R;
 import com.myanycamm.utils.Constants;
 import com.myanycamm.utils.Constants.gridItemEntity;
 import com.myanycamm.utils.ELog;
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
+import java.util.ArrayList;
 
 
 public class PhotoListView extends RelativeLayout {
@@ -52,7 +54,7 @@ public class PhotoListView extends RelativeLayout {
 	
 	private boolean firstRun = true;
 //	private Bitmap bm;
-	FinalBitmap fb;
+//	FinalBitmap fb;
 
 	private MThread mThread;
 
@@ -95,8 +97,20 @@ public class PhotoListView extends RelativeLayout {
 						//						
 						ImageView v = new ImageView(mActivity);
 						// v.setLayoutParams(new LayoutParams(itemw,itemh));
-						fb.display(v, gie.path);
+						//fb.display(v, gie.path);
 //						v.setImageDrawable(gie.image);
+
+						File file = new File(gie.path);
+						if (file != null){
+							Picasso.with(mActivity)
+									.load(file)
+									.resize(160, 120)
+									.centerCrop()
+									.config(Bitmap.Config.RGB_565)
+									//.placeholder(R.drawable.reportthumb)
+									.into(v);
+						}
+
 						child.addView(v);
 						currentCount++;
 					}
@@ -159,7 +173,7 @@ public class PhotoListView extends RelativeLayout {
 		ELog.i(TAG, "data:"+data);
 		data.removeAllViews();
 //		ELog.i(TAG, "thread:"+mThread.isAlive());
-		fb = FinalBitmap.create(mActivity);
+	//	fb = FinalBitmap.create(mActivity);
 		mThread = new MThread();
 		mThread.start();
 //		if(mThread.isAlive()){
